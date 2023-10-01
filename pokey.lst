@@ -1,0 +1,240 @@
+mads 2.0.4 build 13 (8 May 16)
+Source: pokey.asm
+     1 				;odgrywamy sample na przerwaniu Pokey'a, procedura na stronie zerowej	
+     2 						opt h-
+     3 						
+     4 = 006E			powtorz	equ sirq+1		
+     5 						
+     6 						icl 'atari5200.hea'
+Source: atari5200.hea
+     1
+     2 				.enum	@dmactl
+     3 = 0000				blank	= %00
+     4 = 0001				narrow	= %01
+     5 = 0002				standard= %10
+     6 = 0003				wide	= %11
+     7 = 0004				missiles= %100
+     8 = 0008				players	= %1000
+     9 = 0010				lineX1	= %10000
+    10 = 0000				lineX2	= %00000
+    11 = 0020				dma	= %100000
+    12 				.ende
+    13
+    14 = 003F			scr48	= @dmactl(wide|dma|players|missiles|lineX1)		;screen 48b
+    15 = 003E			scr40	= @dmactl(standard|dma|players|missiles|lineX1)		;screen 40b
+    16 = 003D			scr32	= @dmactl(narrow|dma|players|missiles|lineX1)		;screen 32b
+    17
+    18 				.enum	@pmcntl
+    19 = 0001				missiles= %1
+    20 = 0002				players	= %10
+    21 = 0004				trigs	= %100
+    22 				.ende
+    23
+    24 				.enum	@gtictl
+    25 = 0000				prior0	= %0
+    26 = 0001				prior1	= %1
+    27 = 0002				prior2	= %10
+    28 = 0004				prior4	= %100
+    29 = 0008				prior8	= %1000
+    30 = 0010				ply5	= %10000	; Fifth Player Enable
+    31 = 0020				mlc	= %100000	; Multiple Color Player Enable
+    32 = 0040				mode9	= %01000000
+    33 = 0080				mode10	= %10000000
+    34 = 00C0				mode11	= %11000000
+    35 				.ende
+    36
+    37
+    38
+    39 				* ---------------------------------------------------------------------------------------------
+    40 				* ---	GTIA
+    41 				* ---------------------------------------------------------------------------------------------
+    42 = C000			hposp0	=	$C000		; pozioma pozycja gracza 0 (Z)
+    43 = C001			hposp1	=	$C001		; pozioma pozycja gracza 1 (Z)
+    44 = C002			hposp2	=	$C002		; pozioma pozycja gracza 2 (Z)
+    45 = C003			hposp3	=	$C003		; pozioma pozycja gracza 3 (Z)
+    46 = C004			hposm0	=	$C004		; pozioma pozycja pocisku 0 (Z)
+    47 = C005			hposm1	=	$C005		; pozioma pozycja pocisku 1 (Z)
+    48 = C006			hposm2	=	$C006		; pozioma pozycja pocisku 2 (Z)
+    49 = C007			hposm3	=	$C007		; pozioma pozycja pocisku 3 (Z)
+    50 = C008			sizep0	=	$C008		; poziomy rozmiar gracza 0 (Z)
+    51 = C009			sizep1	=	$C009		; poziomy rozmiar gracza 1 (Z)
+    52 = C00A			sizep2	=	$C00A		; poziomy rozmiar gracza 2 (Z)
+    53 = C00B			sizep3	=	$C00B		; poziomy rozmiar gracza 3 (Z)
+    54 = C00C			sizem	=	$C00C		; poziomy rozmiar pocisków (Z)
+    55 = C00D			grafp0	=	$C00D		; rejestr grafiki gracza 0 (Z)
+    56 = C00E			grafp1	=	$C00E		; rejestr grafiki gracza 1 (Z)
+    57 = C00F			grafp2	=	$C00F		; rejestr grafiki gracza 2 (Z)
+    58 = C010			grafp3	=	$C010		; rejestr grafiki gracza 3 (Z)
+    59 = C011			grafm	=	$C011		; rejestr grafiki pocisków (Z)
+    60 = C012			colpm0	=	$C012		; rejestr koloru gracza i pocisku 0 (Z)
+    61 = C013			colpm1	=	$C013		; rejestr koloru gracza i pocisku 1 (Z)
+    62 = C014			colpm2	=	$C014		; rejestr koloru gracza i pocisku 2 (Z)
+    63 = C015			colpm3	=	$C015		; rejestr koloru gracza i pocisku 3 (Z)
+    64 = C016			colpf0	=	$C016		; rejestr koloru pola gry 0 (Z)
+    65 = C017			colpf1	=	$C017		; rejestr koloru pola gry 1 (Z)
+    66 = C018			colpf2	=	$C018		; rejestr koloru pola gry 2 (Z)
+    67 = C019			colpf3	=	$C019		; rejestr koloru pola gry 3 (Z)
+    68 = C01A			colbak	=	$C01A		; rejestr koloru t³a (Z)
+    69
+    70 = C016			color0	=	colpf0
+    71 = C017			color1	=	colpf1
+    72 = C018			color2	=	colpf2
+    73 = C019			color3	=	colpf3
+    74
+    75 = C000			kolm0pf	=	$C000		; kolizja pocisku 0 z polem gry (O)
+    76 = C001			kolm1pf	=	$C001		; kolizja pocisku 1 z polem gry (O)
+    77 = C002			kolm2pf	=	$C002		; kolizja pocisku 2 z polem gry (O)
+    78 = C003			kolm3pf	=	$C003		; kolizja pocisku 3 z polem gry (O)
+    79 = C004			kolp0pf	=	$C004		; kolizja gracza 0 z polem gry (O)
+    80 = C005			kolp1pf	=	$C005		; kolizja gracza 1 z polem gry (O)
+    81 = C006			kolp2pf	=	$C006		; kolizja gracza 2 z polem gry (O)
+    82 = C007			kolp3pf	=	$C007		; kolizja gracza 3 z polem gry (O)
+    83 = C008			kolm0p	=	$C008		; kolizja pocisku 0 z graczem (O)
+    84 = C009			kolm1p	=	$C009		; kolizja pocisku 1 z graczem (O)
+    85 = C00A			kolm2p	=	$C00A		; kolizja pocisku 2 z graczem (O)
+    86 = C00B			kolm3p	=	$C00B		; kolizja pocisku 3 z graczem (O)
+    87 = C00C			kolp0p	=	$C00C		; kolizja gracza 0 z innym graczem (O)
+    88 = C00D			kolp1p	=	$C00D		; kolizja gracza 1 z innym graczem (O)
+    89 = C00E			kolp2p	=	$C00E		; kolizja gracza 2 z innym graczem (O)
+    90 = C00F			kolp3p	=	$C00F		; kolizja gracza 3 z innym graczem (O)
+    91 = C010			trig0	=	$C010		; stan przycisku joysticka 0 (O)
+    92 = C011			trig1	=	$C011		; stan przycisku joysticka 1 (O)
+    93 = C013			trig3	=	$C013		; znacznik do³¹czenia cartridge-a (O)
+    94
+    95 = C01B			gtictl	=	$C01B		; rejestr kontroli uk³adu GTIA
+    96 = C01B			gtiactl	=	gtictl
+    97
+    98 = C01C			vdelay	=	$C01C		; licznik opóŸnienia pionowego P/MG
+    99 = C01D			pmcntl	=	$C01D		; rejestr kontroli graczy i pocisków
+   100 = C01E			hitclr	=	$C01E		; rejestr kasowania rejestrów kolizji
+   101 = C01F			consol	=	$C01F		; rejestr stanu klawiszy konsoli
+   102
+   103 				* ---------------------------------------------------------------------------------------------
+   104 				* ---	POKEY
+   105 				* ---------------------------------------------------------------------------------------------
+   106
+   107
+   108 = E800			audf1	=	$E800		; czêstotliwoœæ pracy generatora 1 (Z)
+   109 = E800			pot0	=   $E800
+   110 = E801			audc1	=	$E801		; rejestr kontroli dŸwiêku generatora 1 (Z)
+   111 = E801			pot1	=	$E801
+   112 = E802			audf2	=	$E802		; czêstotliwoœæ pracy generatora 2 (Z)
+   113 = E803			audc2	=	$E803		; rejestr kontroli dŸwiêku generatora 2 (Z)
+   114 = E804			audf3	=	$E804		; czêstotliwoœæ pracy generatora 3 (Z)
+   115 = E805			audc3	=	$E805		; rejestr kontroli dŸwiêku generatora 3 (Z)
+   116 = E806			audf4	=	$E806		; czêstotliwoœæ pracy generatora 4 (Z)
+   117 = E807			audc4	=	$E807		; rejestr kontroli dŸwiêku generatora 4 (Z)
+   118
+   119 = E808			audctl	=	$E808		; rejestr kontroli generatorów dŸwiêku (Z)
+   120 = E809			stimer	=	$E809		; rejestr zerowania liczników (Z)
+   121 = E809			kbcode	=	$E809		; kod ostatnio naciœniêtego klawisza (O)
+   122 = E80A			skstres	=	$E80A		; rejestr statusu z³¹cza szeregowego (Z)
+   123 = E80A			random	=	$E80A		; rejestr liczby losowej (O)
+   124 = E80D			serout	=	$E80D		; szeregowy rejestr wyjœciowy (Z)
+   125 = E80D			serin	=	$E80D		; szeregowy rejestr wejœciowy (O)
+   126 = E80E			irqen	=	$E80E		; zezwolenie przerwañ IRQ (Z)
+   127 = E80E			irqst	=	$E80E		; status przerwañ IRQ (O)
+   128 = E80F			skctl	=	$E80F		; rejestr kontroli z³¹cza szeregowego (Z)
+   129 = E80F			skstat	=	$E80F		; rejestr statusu z³¹cza szeregowego (O)
+   130
+   131 = E80B			potg0	=	$E80B
+   132
+   133 				* ---------------------------------------------------------------------------------------------
+   134 				* ---	ANTIC
+   135 				* ---------------------------------------------------------------------------------------------
+   136 = D400			dmactl	=	$D400		; rejestr kontroli dostêpu do pamiêci
+   137 = D401			chrctl	=	$D401		; rejestr kontroli wyœwietlania znaków
+   138 = D402			dlptr	=	$D402		; adres programu ANTIC-a
+   139 = D404			hscrol	=	$D404		; znacznik poziomego przesuwu obrazu
+   140 = D405			vscrol	=	$D405		; znacznik pionowego przesuwu obrazu
+   141 = D407			pmbase	=	$D407		; adres pamiêci graczy i pocisków
+   142 = D409			chbase	=	$D409		; adres zestawu znaków
+   143 = D40A			wsync	=	$D40A		; znacznik oczekiwania na synchronizacjê poziom¹
+   144 = D40B			vcount	=	$D40B		; licznik linii obrazu
+   145 = D40C			lpenh	=	$D40C		; poziome po³o¿enie pióra œwietlengo
+   146 = D40D			lpenv	=	$D40D		; pionowe po³o¿enie pióra œwietlnego
+   147 = D40E			nmien	=	$D40E		; rejestr zezwoleñ na przerwania NMI
+   148 = D40F			nmist	=	$D40F		; rejestr statusu przerwañ NMI
+   149 = D40F			nmires	=   $D40F
+   150
+   151
+   152
+   153 				//system vectors
+   154 = 0200			irqv	= $200
+   155 = 0202			vbiv	= $202
+   156 = 0204			vbi2v	= $204
+   157 = 0206			dliv	= $206
+   158 = 0208			keyv	= $208
+   159 = 020A			padv	= $20a
+   160
+     7 						
+     8 						org 0
+     9 = 0000			pok1	equ *		;gorna polowka
+    10 0000 85 17				sta pok1a+1
+    11 = 0002			probka1	equ *
+    12 0002 A9 FF				lda #$ff
+    13 0004 8D 07 E8				sta AUDC4
+    14
+    15 0007 A9 00 8D 0E E8			mva #0 irqen
+    16 000C A9 04 8D 0E E8			mva #4 irqen
+    17 						
+    18 0011 A9 19				lda #<pok0		;adres procedury pok0
+    19 0013 8D 00 02				sta irqv
+    20 						
+    21 0016 A9 FF		pok1a	lda #$ff
+    22 0018 40					rti					;18bajtÃ³w
+    23
+    24
+    25 = 0019			pok0	equ *
+    26 0019 85 54				sta pok0a+1
+    27 001B AD 00 40				lda $4000			;zapamietaj bank pamieci
+    28 001E 85 51				sta pok0b+1
+    29 = 0020			probka	equ *		
+    30 0020 A9 FF				lda #$ff
+    31 0022 8D 07 E8				sta AUDC4
+    32 0025 A9 00				lda #<pok1				;adres przerwania pok1
+    33 0027 8D 00 02				sta irqv	
+    34 002A 8D 0E E8				sta irqen
+    35 002D AD D4 BF				lda $bfd4			;wlacz bank z samplami bank1 (13)
+    36 = 0031			sam		equ *+1
+    37 0030 AD FF FF		@		lda $ffff
+    38 0033 F0 21				beq @+
+    39 						
+    40 0035 85 3C				sta _probkaw
+    41 0037 09 10				ora #%10000
+    42 0039 85 21				sta probka+1
+    43 = 003C			_probkaw	equ *+1		
+    44 003B A9 FF				lda #$ff
+    45 003D 4A 4A 4A 4A				:4 lsr
+    46 0041 09 10				ora #%10000
+    47 0043 85 03				sta probka1+1
+    48 						
+    49 0045 E6 31				inc sam			;next byte
+    50 0047 D0 02				bne *+4
+    51 0049 E6 32				inc sam+1
+    52
+    53 004B A9 04 8D 0E E8			mva #4 irqen
+    54
+    55 0050 AD D0 BF		pok0b	lda $BFD0	;przywroc bank
+    56 0053 A9 FF		pok0a	lda #$ff	;odtworz rejestr A
+    57 0055 40					rti
+    58 						
+    59 0056 C6 6E		@		dec powtorz
+    60 0058 F0 0B				beq @+			;koniec
+    61 = 005B			sam2	equ *+1		
+    62 005A A9 FF				lda #$ff
+    63 005C 85 31				sta sam
+    64 = 005F			sam2s	equ *+1		
+    65 005E A9 FF				lda #$ff
+    66 0060 85 32				sta sam+1
+    67 0062 4C 30 00				jmp @-1		;powtorz
+    68 						
+    69 0065 85 6D		@		sta sirq		;A=0 ,wylacz przerwanie
+    70 0067 8D 0E E8				sta IRQEN
+    71 							
+    72 006A 4C 50 00				jmp pok0b		
+    73 = 006D			sirq	equ *		
+    74 						
+    75
+    76 						
+    77 				;		

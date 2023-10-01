@@ -1,0 +1,1 @@
+mads.exe -t -l a.asm -o:a.bin
